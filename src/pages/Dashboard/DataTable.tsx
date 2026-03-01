@@ -21,7 +21,9 @@ export default function DataTable({ coins }: DataTableProps) {
     direction: 'asc',
   })
 
+  // only allow sorting on certain keys
   const handleSort = (key: keyof Coin) => {
+    if (key !== 'name' && key !== 'currentPrice') return
     let direction: 'asc' | 'desc' = 'asc'
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
       direction = 'desc'
@@ -63,10 +65,12 @@ export default function DataTable({ coins }: DataTableProps) {
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="w-12">#</TableHead>
+            <TableRow className="bg-gray-50 dark:bg-gray-800">
+              <TableHead className="w-12 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">
+                #
+              </TableHead>
               <TableHead
-                className="cursor-pointer hover:bg-muted/50 transition-colors"
+                className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-xs font-semibold uppercase text-gray-500 dark:text-gray-400"
                 onClick={() => handleSort('name')}
               >
                 <div className="flex items-center gap-2">
@@ -74,24 +78,22 @@ export default function DataTable({ coins }: DataTableProps) {
                 </div>
               </TableHead>
               <TableHead
-                className="text-right cursor-pointer hover:bg-muted/50 transition-colors"
+                className="text-right cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-xs font-semibold uppercase text-gray-500 dark:text-gray-400"
                 onClick={() => handleSort('currentPrice')}
               >
                 <div className="flex items-center justify-end gap-2">
                   Price <SortIcon columnKey="currentPrice" />
                 </div>
               </TableHead>
-              <TableHead className="text-right cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('priceChangePercentage24h')}>
-                <div className="flex items-center justify-end gap-2">
-                  24h Change <SortIcon columnKey="priceChangePercentage24h" />
-                </div>
+              <TableHead className="text-right text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">
+                24h Change
               </TableHead>
-              <TableHead className="text-right cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleSort('marketCap')}>
-                <div className="flex items-center justify-end gap-2">
-                  Market Cap <SortIcon columnKey="marketCap" />
-                </div>
+              <TableHead className="text-right text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">
+                Market Cap
               </TableHead>
-              <TableHead className="text-right">Volume 24h</TableHead>
+              <TableHead className="text-right text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">
+                Volume 24h
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

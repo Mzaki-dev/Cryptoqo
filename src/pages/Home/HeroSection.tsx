@@ -67,16 +67,13 @@ export default function HeroSection() {
             custom={0.36}
             className="flex justify-center pt-2"
           >
-            <Button
-              asChild
-              size="lg"
-              className="gap-2 px-8 font-semibold bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/40 rounded-full"
+            <Link
+              to="/dashboard"
+              className="inline-flex items-center gap-2 px-8 py-3 font-semibold bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/40 rounded-full"
             >
-              <Link to="/dashboard" className="inline-flex items-center gap-2">
-                Explore Dashboard
-                <ArrowRight className="h-4 w-4 text-white" />
-              </Link>
-            </Button>
+              Explore Dashboard
+              <ArrowRight className="h-4 w-4 text-white" />
+            </Link>
           </motion.div>
 
         </div>

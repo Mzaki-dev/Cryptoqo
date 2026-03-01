@@ -1,5 +1,5 @@
 import { fetchApi } from './apiClient'
-import { Coin } from '../types'
+import { Coin } from '../types/coin'
 
 interface CoinGeckoResponse {
   id: string
@@ -19,52 +19,75 @@ interface CoinGeckoResponse {
   atl: number
 }
 
-export async function fetchCoinsData(
-  page: number = 1,
-  perPage: number = 20,
-  order: string = 'market_cap_desc'
-): Promise<Coin[]> {
-  const endpoint = `/coins/markets?vs_currency=usd&order=${order}&per_page=${perPage}&page=${page}&sparkline=false`
-  
-  const data = await fetchApi<CoinGeckoResponse[]>(endpoint)
-  
-  return data.map((coin) => ({
-    id: coin.id,
-    symbol: coin.symbol.toUpperCase(),
-    name: coin.name,
-    image: coin.image,
-    currentPrice: coin.current_price,
-    marketCap: coin.market_cap,
-    marketCapRank: coin.market_cap_rank,
-    totalVolume: coin.total_volume,
-    high24h: coin.high_24h,
-    low24h: coin.low_24h,
-    priceChangePercentage24h: coin.price_change_percentage_24h,
-    circulatingSupply: coin.circulating_supply,
-    totalSupply: coin.total_supply,
-    ath: coin.ath,
-    atl: coin.atl,
-  }))
-}
-
-export async function searchCoins(query: string): Promise<Coin[]> {
-  if (!query.trim()) {
-    return []
+export function CoinGecko() {
+  async function getList(
+    page: number = 1,
+    perPage: number = 20,
+    order: string = 'market_cap_desc'
+  ): Promise<Coin[]> {
+    const endpoint = `/coins/markets?vs_currency=usd&order=${order}&per_page=${perPage}&page=${page}&sparkline=false`
+    const data = await fetchApi<CoinGeckoResponse[]>(endpoint)
+    return data.map((coin) => ({
+      id: coin.id,
+      symbol: coin.symbol.toUpperCase(),
+      name: coin.name,
+      image: coin.image,
+      currentPrice: coin.current_price,
+      marketCap: coin.market_cap,
+      marketCapRank: coin.market_cap_rank,
+      totalVolume: coin.total_volume,
+      high24h: coin.high_24h,
+      low24h: coin.low_24h,
+      priceChangePercentage24h: coin.price_change_percentage_24h,
+      circulatingSupply: coin.circulating_supply,
+      totalSupply: coin.total_supply,
+      ath: coin.ath,
+      atl: coin.atl,
+    }))
   }
 
-  try {
-    const endpoint = `/search?query=${encodeURIComponent(query)}`
-    const data = await fetchApi<{ coins: any[] }>(endpoint)
-    
-    if (!data.coins) {
+  async function search(query: string): Promise<Coin[]> {
+    if (!query.trim()) {
       return []
     }
 
-    // Get detailed data for first 5 results
-    const coinIds = data.coins.slice(0, 5).map((c) => c.id).join(',')
-    return fetchCoinsData(1, 5)
-  } catch (error) {
-    console.error('Search error:', error)
-    return []
+    try {
+      // first call the search endpoint to get matching ids
+      const endpoint = `/search?query=${encodeURIComponent(query)}`
+      const data = await fetchApi<{ coins: { id: string }[] }>(endpoint)
+
+      if (!data.coins || data.coins.length === 0) {
+        return []
+      }
+
+      // build ids list from results (limit to 20)
+      const coinIds = data.coins.slice(0, 20).map((c) => c.id).join(',')
+      // fetch market details for those ids
+      const marketEndpoint = `/coins/markets?vs_currency=usd&ids=${coinIds}&order=market_cap_desc&per_page=20&page=1&sparkline=false`
+      const marketData = await fetchApi<CoinGeckoResponse[]>(marketEndpoint)
+
+      return marketData.map((coin) => ({
+        id: coin.id,
+        symbol: coin.symbol.toUpperCase(),
+        name: coin.name,
+        image: coin.image,
+        currentPrice: coin.current_price,
+        marketCap: coin.market_cap,
+        marketCapRank: coin.market_cap_rank,
+        totalVolume: coin.total_volume,
+        high24h: coin.high_24h,
+        low24h: coin.low_24h,
+        priceChangePercentage24h: coin.price_change_percentage_24h,
+        circulatingSupply: coin.circulating_supply,
+        totalSupply: coin.total_supply,
+        ath: coin.ath,
+        atl: coin.atl,
+      }))
+    } catch (error) {
+      console.error('Search error:', error)
+      return []
+    }
   }
+
+  return { getList, search }
 }

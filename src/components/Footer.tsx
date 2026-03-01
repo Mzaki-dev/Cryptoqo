@@ -83,24 +83,26 @@ export default function Footer() {
           </div>
 
           {/* Link columns */}
-          {Object.entries(footerLinks).map(([col, links]) => (
-            <div key={col}>
-              <p className="text-sm font-semibold text-foreground mb-4">{col}</p>
-              <ul className="space-y-3">
-                {links.map((link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+            <div className="md:col-span-3 flex flex-row justify-between space-x-8 overflow-x-auto">
+              {Object.entries(footerLinks).map(([col, links]) => (
+                <div key={col} className="min-w-[120px]">
+                  <p className="text-sm font-semibold text-foreground mb-4">{col}</p>
+                  <ul className="space-y-3">
+                    {links.map((link) => (
+                      <li key={link.label}>
+                        <a
+                          href={link.href}
+                          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          {link.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
 
         {/* Bottom bar */}
         <div className="border-t border-border py-6 flex flex-col sm:flex-row justify-between items-center gap-3">

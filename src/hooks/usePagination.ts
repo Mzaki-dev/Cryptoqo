@@ -2,14 +2,15 @@ import { useState } from 'react'
 
 interface UsePaginationOptions {
   initialPage?: number
-  perPage?: number
+  initialPerPage?: number
 }
 
 export function usePagination({
   initialPage = 1,
-  perPage = 20,
+  initialPerPage = 10,
 }: UsePaginationOptions = {}) {
   const [page, setPage] = useState(initialPage)
+  const [perPage, setPerPage] = useState(initialPerPage)
 
   const goToPage = (newPage: number) => {
     setPage(Math.max(1, newPage))
@@ -22,6 +23,7 @@ export function usePagination({
   return {
     page,
     perPage,
+    setPerPage,
     goToPage,
     nextPage,
     prevPage,
